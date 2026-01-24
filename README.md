@@ -167,6 +167,10 @@ DELETE /api/topics/:id      # Eliminar un tema
 - Variables de entorno para información sensible
 - Middleware de autenticación
 
+## 🔗 Repositorios Relacionados
+
+- **Frontend Web**: [indexa-web](https://github.com/kitorosano/indexa-web) - Frontend en HTML/JavaScript para interactuar con esta API.
+
 ## 📄 Licencia
 
 Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
