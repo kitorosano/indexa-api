@@ -1,0 +1,31 @@
+{
+  "name": "indexa-api",
+  "version": "1.0.0",
+  "description": "RESTAPI for Indexa",
+  "main": "index.js",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kitorosano/indexa-api.git"
+  },
+  "keywords": [
+    "Indexa",
+    "API",
+    "REST",
+    "RESTful",
+    "Backend",
+    "Node"
+  ],
+  "author": "Kitorosano",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kitorosano/indexa-api/issues"
+  },
+  "homepage": "https://github.com/kitorosano/indexa-api#readme"
+}
