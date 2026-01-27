@@ -181,6 +181,10 @@ Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE)
 
 - GitHub: [@kitorosano](https://github.com/kitorosano)
 
+**theodonzio**
+
+- GitHub: [@theodonzio](https://github.com/theodonzio)
+
 ---
 
 ⭐️ Si este proyecto te resulta útil, considera darle una estrella en GitHub
