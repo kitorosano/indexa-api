@@ -1,9 +1,10 @@
+import 'dotenv/config';
 import express from 'express';
 
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT;
 
-// Endpoint to check server status (GET /health)
+// Endpoint para verificar el estado del servidor
 // Request: lo que envia el usuario
 // Response: lo que responde el servidor, siempre tiene un codigo de estado, y puede tener un cuerpo
 // Codigo de estado: 200 (Todo esta OK)
