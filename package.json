@@ -27,5 +27,9 @@
   "bugs": {
     "url": "https://github.com/kitorosano/indexa-api/issues"
   },
-  "homepage": "https://github.com/kitorosano/indexa-api#readme"
+  "homepage": "https://github.com/kitorosano/indexa-api#readme",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1"
+  }
 }
