@@ -1,8 +1,11 @@
 import 'dotenv/config';
 import express from 'express';
+import userRouter from './routes/userRoutes.js'
 
 const app = express();
 const PORT = process.env.PORT;
+
+app.use(express.json());
 
 // Endpoint para verificar el estado del servidor
 // Request: lo que envia el usuario
@@ -11,6 +14,8 @@ const PORT = process.env.PORT;
 app.get('/health', function (request, response) {
   response.status(200).send('Server is healthy');
 });
+
+app.use('/users', userRouter);
 
 app.listen(PORT, function () {
   console.log(`Server is running on http://localhost:${PORT}`);
