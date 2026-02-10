@@ -1,5 +1,7 @@
+import bcrypt from 'bcrypt';
 import 'dotenv/config';
 import express from 'express';
+import db from './config/db.js';
 
 const app = express();
 const PORT = process.env.PORT;
@@ -14,52 +16,52 @@ app.get('/health', function (request, response) {
   response.status(200).send('Server is healthy');
 });
 
-const users = [
-  { id: 1, name: "User1", email: "uno@prueba.com", password: "111111"},
-  { id: 2, name: "User2", email: "dos@prueba.com", password: "222222"}
-] 
+app.post('/users', async function (req, res) {
+  try {
+    // Validar datos de entrada
+    if (
+      req.body.name === '' ||
+      req.body.email === '' ||
+      req.body.password === ''
+    ) {
+      return res.status(400).json({
+        message: 'Todos los campos son obligatorios',
+      });
+    }
 
-// Endpoints de Usuarios
-app.post('/users', function (req, res) {
-  // Validar datos de entrada
-  if (
-    req.body.name === '' ||
-    req.body.email === '' ||
-    req.body.password === ''
-  ) {
-    return res.status(400).json({
-      message: 'Todos los campos son obligatorios',
+    // Validar si existe usuario con email
+    const resultFoundedUser = await db.query(
+      'SELECT * FROM users WHERE email = $1',
+      [req.body.email],
+    );
+
+    if (resultFoundedUser.rows.length > 0) {
+      return res.status(409).json({
+        message: 'Ya existe un usuario con ese email',
+      });
+    }
+
+    // Hashear la password
+    const hashedPassword = await bcrypt.hash(req.body.password, 8);
+
+    // Insertar nuevo usuario en la tabla y devolverlo sin la contraseña
+    const resultNewUser = await db.query(
+      `INSERT INTO users (name, email, password) VALUES ($1,$2,$3) RETURNING id,name,email`,
+      [req.body.name, req.body.email, hashedPassword],
+    );
+
+    // Devolver el nuevo usuario al cliente
+    return res.status(201).json({
+      message: 'Usuario registrado correctamente',
+      user: resultNewUser.rows[0],
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message:
+        'Ha ocurrido un error inesperado. Por favor, intenta más tarde...',
     });
   }
-  
-  // Validar si existe usuario con email
-  const foundUser = users.find(function (user) {
-    return user.email === req.body.email
-  })
-
-  if (foundUser) {
-    return res.status(409).json({
-      message: "Ya existe un usuario con ese email"
-    })
-  }
-
-  // Hashear la password
-
-  // Crear nuevo usuario
-  const newUser = {
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password
-  }
-
-  // Insertar nuevo usuario en la tabla;
-  users.push(newUser)
-
-  // Devolver el nuevo usuario al cliente
-  return res.status(201).json({
-    message: "Usuario registrado correctamente",
-    user: newUser
-  })
 });
 
 app.listen(PORT, function () {
