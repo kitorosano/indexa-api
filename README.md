@@ -109,7 +109,15 @@ indexa-api/
 
    Ejecuta las migraciones o scripts SQL necesarios (ubicados en `config/` o directorio específico).
 
-5. **Iniciar el servidor**
+5. **Instalar dependencias**
+
+  Para instalar las dependencias del proyecto, ejecuta el siguiente comando en la terminal:
+
+   ```bash
+   npm install
+   ```
+
+6. **Iniciar el servidor**
 
    ```bash
    npm run dev
