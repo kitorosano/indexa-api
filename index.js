@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import userRouter from './routes/userRoutes.js'
+import bookRouter from './routes/bookRoutes.js'
 
 const app = express();
 const PORT = process.env.PORT;
@@ -16,6 +17,7 @@ app.get('/health', function (request, response) {
 });
 
 app.use('/users', userRouter);
+app.use('/books', bookRouter);
 
 app.listen(PORT, function () {
   console.log(`Server is running on http://localhost:${PORT}`);
