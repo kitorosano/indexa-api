@@ -1,3 +1,4 @@
+import db from "../config/db.js";
 
 export async function registerUser(req, res) {
   try {
@@ -33,10 +34,16 @@ export async function registerUser(req, res) {
       [req.body.name, req.body.email, hashedPassword],
     );
 
+    const newUser = {
+      id: resultNewUser.rows[0].id,
+      name: resultNewUser.rows[0].name,
+      email: resultNewUser.rows[0].email,
+    }
+
     // Devolver el nuevo usuario al cliente
     return res.status(201).json({
       message: 'Usuario registrado correctamente',
-      user: resultNewUser.rows[0],
+      user: newUser,
     });
   } catch (error) {
     console.log(error);
