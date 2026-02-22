@@ -55,3 +55,33 @@ export async function createTag(req, res) {
     });
   }
 }
+
+export async function deleteTag(req, res) {
+  try {
+    const { id } = req.params;
+    if (!validateUUID(id)) {
+      return res.status(400).json({
+        message: 'El ID proporcionado no es un UUID válido',
+      });
+    }
+
+    const resultDeleteTag = await db.query(
+      'DELETE FROM tags WHERE id = $1 RETURNING id',
+      [id],
+    );
+
+    if (resultDeleteTag.rows.length === 0) {
+      return res.status(404).json({
+        message: 'No existe una etiqueta con ese ID',
+      });
+    }
+
+    return res.status(204).json();
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message:
+        'Ha ocurrido un error inesperado. Por favor, intenta más tarde...',
+    });
+  }
+}
