@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { deleteBook } from "../controllers/bookController.js";
+import { deleteBook, getBookById } from "../controllers/bookController.js";
 
-const router = Router()
+const router = Router();
 
-// DELETE /books/:id => Elimina un libro de la DB por su ID
+router.get('/:id', getBookById);
 router.delete('/:id', deleteBook);
 
 export default router;
