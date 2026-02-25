@@ -1,5 +1,5 @@
-import db from '../config/db.js';
-import { validateUUID } from '../utils/validations.js';
+import db from "../config/db.js";
+import { validateUUID } from "../utils/validations.js";
 
 export async function deleteBook(req, res) {
   try {
@@ -9,31 +9,31 @@ export async function deleteBook(req, res) {
     // Validar que el ID proporcionado sea un UUID válido
     if (!validateUUID(bookId)) {
       return res.status(400).json({
-        message: 'El ID proporcionado no es un UUID válido',
+        message: "El ID proporcionado no es un UUID válido",
       });
     }
 
     // Validar que exista un libro con el ID proporcionado
     const resultFoundedBook = await db.query(
-      'SELECT * FROM books WHERE id = $1',
+      "SELECT * FROM books WHERE id = $1",
       [bookId],
     );
 
     if (resultFoundedBook.rows.length === 0) {
       return res.status(404).json({
-        message: 'No existe un libro con ese ID',
+        message: "No existe un libro con ese ID",
       });
     }
 
     // Eliminar el libro de la tabla
-    await db.query('DELETE FROM books WHERE id = $1', [bookId]);
+    await db.query("DELETE FROM books WHERE id = $1", [bookId]);
 
     return res.status(204).send();
   } catch (error) {
     console.log(error);
     return res.status(500).json({
       message:
-        'Ha ocurrido un error inesperado. Por favor, intenta más tarde...',
+        "Ha ocurrido un error inesperado. Por favor, intenta más tarde...",
     });
   }
 }
@@ -47,19 +47,18 @@ export async function getBookById(req, res) {
     // 1 Validar UUID
     if (!validateUUID(bookId)) {
       return res.status(400).json({
-        message: 'El ID proporcionado no es un UUID válido',
+        message: "El ID proporcionado no es un UUID válido",
       });
     }
 
     // 2 Buscar libro
-    const result = await db.query(
-      'SELECT * FROM books WHERE id = $1',
-      [bookId],
-    );
+    const result = await db.query("SELECT * FROM books WHERE id = $1", [
+      bookId,
+    ]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({
-        message: 'No existe un libro con ese ID',
+        message: "No existe un libro con ese ID",
       });
     }
 
@@ -76,14 +75,74 @@ export async function getBookById(req, res) {
       pages: book.pages ?? "",
       coverUrl: book.cover_url ?? "",
     };
-    
-    return res.status(200).json(mappedBook);
 
+    return res.status(200).json(mappedBook);
   } catch (error) {
     console.log(error);
     return res.status(500).json({
       message:
-        'Ha ocurrido un error inesperado. Por favor, intenta más tarde...',
+        "Ha ocurrido un error inesperado. Por favor, intenta más tarde...",
+    });
+  }
+}
+
+// ---- POST -----
+
+export async function createBook(req, res) {
+  try {
+    const { title, author, publisher, publicationYear, pages, coverUrl } =
+      req.body;
+
+    // 1️⃣ Validar obligatorios (según tu tabla solo title parece obligatorio)
+    if (!title) {
+      return res.status(400).json({
+        message: "Title es obligatorio",
+      });
+    }
+
+    // 2️⃣ Validaciones de formato
+    if (publicationYear && typeof publicationYear !== "number") {
+      return res.status(400).json({
+        message: "publicationYear debe ser numérico",
+      });
+    }
+
+    if (pages && typeof pages !== "number") {
+      return res.status(400).json({
+        message: "pages debe ser numérico",
+      });
+    }
+
+    // 3️⃣ Validar duplicado por título
+    const existingBook = await db.query(
+      "SELECT * FROM books WHERE title = $1",
+      [title],
+    );
+
+    if (existingBook.rows.length > 0) {
+      return res.status(409).json({
+        message: "Ya existe un libro con ese título",
+      });
+    }
+
+    // 4️⃣ user_id desde usuario logueado
+    const userId = req.user.id;
+
+    // 5️⃣ Insertar mapeando camelCase → snake_case
+    const insertedBook = await db.query(
+      `INSERT INTO books 
+      (user_id, title, author, publisher, publication_year, pages, cover_url)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING *`,
+      [userId, title, author, publisher, publicationYear, pages, coverUrl],
+    );
+
+    return res.status(201).json(insertedBook.rows[0]);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message:
+        "Ha ocurrido un error inesperado. Por favor, intenta más tarde...",
     });
   }
 }
