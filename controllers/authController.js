@@ -111,3 +111,29 @@ export async function login(req, res) {
     });
   }
 }
+
+export async function logout(req, res) {
+  try {
+    const refreshTokenOnCookie = req.cookies?.refreshToken;
+
+    if (refreshTokenOnCookie) {
+      // Eliminar el refresh token de la base de datos
+      await db.query('DELETE FROM sessions WHERE refresh_token = $1', [
+        refreshTokenOnCookie,
+      ]);
+      res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+      });
+    }
+
+    return res.status(204).send();
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message:
+        'Ha ocurrido un error inesperado. Por favor, intenta más tarde...',
+    });
+  }
+}
