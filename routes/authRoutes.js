@@ -3,13 +3,13 @@ import { login, logout, refreshToken } from '../controllers/authController.js';
 
 const router = Router();
 
-// POST /auth/login => Iniciar sesión con las credenciales de un usuario
-router.post('/login', login);
+// POST /auth => Iniciar sesión con las credenciales de un usuario
+router.post('/', login);
 
-// GET /auth/token => Obtener un nuevo access token utilizando el refresh token
-router.get('/token', refreshToken);
+// GET /auth => Obtener un nuevo access token utilizando el refresh token
+router.get('/', refreshToken);
 
-// GET /auth/logout => Cerrar sesión del usuario actual
-router.delete('/logout', logout)
+// GET /auth => Cerrar sesión del usuario actual
+router.delete('/', logout);
 
 export default router;
