@@ -67,16 +67,16 @@ export async function getBookById(req, res) {
 
     // 3️ Mapear snake_case → camelCase
     const mappedBook = {
-      id: book.id,
-      userId: book.user_id,
-      title: book.title,
-      author: book.author,
-      publisher: book.publisher,
-      publicationYear: book.publication_year,
-      pages: book.pages,
-      coverUrl: book.cover_url,
+      id: book.id ?? "",
+      userId: book.user_id ?? "",
+      title: book.title ?? "",
+      author: book.author ?? "",
+      publisher: book.publisher ?? "",
+      publicationYear: book.publication_year ?? "",
+      pages: book.pages ?? "",
+      coverUrl: book.cover_url ?? "",
     };
-
+    
     return res.status(200).json(mappedBook);
 
   } catch (error) {
