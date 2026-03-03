@@ -29,6 +29,24 @@ export async function createTag(req, res) {
       });
     }
 
+    // Validar que el userId del token corresponda al userId del grupo para el que se quiere crear la etiqueta
+    if (resultFoundedGroup.rows[0].user_id !== req.user.id) {
+      return res.status(403).json({
+        message: 'No tienes permisos para crear una etiqueta para este grupo',
+      });
+    }
+
+    // Validar que no exista una etiqueta con el mismo name para el mismo groupId
+    const resultFoundedTag = await db.query(
+      'SELECT * FROM tags WHERE group_id = $1 AND name = $2',
+      [groupId, name],
+    );
+    if (resultFoundedTag.rows.length > 0) {
+      return res.status(409).json({
+        message: 'Ya existe una etiqueta con ese nombre para este grupo',
+      });
+    }
+
     // Insertar nueva etiqueta en la tabla y devolverla
     const resultNewTag = await db.query(
       `INSERT INTO tags (group_id, name, color) VALUES ($1,$2,$3) RETURNING id,group_id,name,color`,
