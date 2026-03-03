@@ -4,6 +4,7 @@ import express from 'express';
 import authRouter from './routes/authRoutes.js';
 import bookRouter from './routes/bookRoutes.js';
 import tagRouter from './routes/tagRoutes.js';
+import groupRouter from './routes/groupRoutes.js';
 import userRouter from './routes/userRoutes.js';
 
 const app = express();
@@ -18,6 +19,7 @@ app.get('/health', function (request, response) {
 app.use('/auth', authRouter);
 app.use('/users', userRouter);
 app.use('/books', bookRouter);
+app.use('/groups', groupRouter);
 app.use('/tags', tagRouter);
 
 const PORT = process.env.PORT;
