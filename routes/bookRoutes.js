@@ -1,5 +1,9 @@
 import { Router } from "express";
-import { deleteBook, getBookById } from "../controllers/bookController.js";
+import {
+  deleteBook,
+  getBookById,
+  createBook,
+} from "../controllers/bookController.js";
 import { verifyAccessToken } from "../middleware/verifyAccessToken.js";
 
 const router = Router();
