@@ -86,58 +86,110 @@ export async function getBookById(req, res) {
   }
 }
 
-// ---- POST -----
-
 export async function createBook(req, res) {
   try {
     const { title, author, publisher, publicationYear, pages, coverUrl } =
       req.body;
 
-    // 1️⃣ Validar obligatorios (según tu tabla solo title parece obligatorio)
-    if (!title) {
+    // Validar campo obligatorio
+    if (!title || typeof title !== "string" || title.trim() === "") {
       return res.status(400).json({
-        message: "Title es obligatorio",
+        message: "El campo title es obligatorio",
       });
     }
 
-    // 2️⃣ Validaciones de formato
-    if (publicationYear && typeof publicationYear !== "number") {
+    // Validar formato de campos opcionales (solo si vienen con valor)
+    if (author !== undefined && author !== null && typeof author !== "string") {
       return res.status(400).json({
-        message: "publicationYear debe ser numérico",
+        message: "El campo author debe ser texto",
       });
     }
 
-    if (pages && typeof pages !== "number") {
+    if (
+      publisher !== undefined &&
+      publisher !== null &&
+      typeof publisher !== "string"
+    ) {
       return res.status(400).json({
-        message: "pages debe ser numérico",
+        message: "El campo publisher debe ser texto",
       });
     }
 
-    // 3️⃣ Validar duplicado por título
-    const existingBook = await db.query(
-      "SELECT * FROM books WHERE title = $1",
-      [title],
+    if (
+      coverUrl !== undefined &&
+      coverUrl !== null &&
+      typeof coverUrl !== "string"
+    ) {
+      return res.status(400).json({
+        message: "El campo coverUrl debe ser texto",
+      });
+    }
+
+    if (publicationYear !== undefined && publicationYear !== null) {
+      const year = Number(publicationYear);
+      if (
+        !Number.isInteger(year) ||
+        year < 1000 ||
+        year > new Date().getFullYear()
+      ) {
+        return res.status(400).json({
+          message: "El campo publicationYear debe ser un año válido",
+        });
+      }
+    }
+
+    if (pages !== undefined && pages !== null) {
+      if (!Number.isInteger(pages) || pages <= 0) {
+        return res.status(400).json({
+          message: "El campo pages debe ser un entero positivo",
+        });
+      }
+    }
+
+    // Validar que no exista un libro con el mismo título
+    const resultFoundedBook = await db.query(
+      "SELECT id FROM books WHERE title = $1",
+      [title.trim()],
     );
-
-    if (existingBook.rows.length > 0) {
+    if (resultFoundedBook.rows.length > 0) {
       return res.status(409).json({
         message: "Ya existe un libro con ese título",
       });
     }
 
-    // 4️⃣ user_id desde usuario logueado
-    const userId = req.user.id;
-
-    // 5️⃣ Insertar mapeando camelCase → snake_case
-    const insertedBook = await db.query(
-      `INSERT INTO books 
-      (user_id, title, author, publisher, publication_year, pages, cover_url)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
-      RETURNING *`,
-      [userId, title, author, publisher, publicationYear, pages, coverUrl],
+    // Insertar mapeando camelCase → snake_case
+    const resultNewBook = await db.query(
+      `INSERT INTO books
+        (user_id, title, author, publisher, publication_year, pages, cover_url)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING *`,
+      [
+        req.user.id,
+        title.trim(),
+        author ?? null,
+        publisher ?? null,
+        publicationYear ?? null,
+        pages ?? null,
+        coverUrl ?? null,
+      ],
     );
 
-    return res.status(201).json(insertedBook.rows[0]);
+    // Mapear snake_case → camelCase en la respuesta
+    const newBook = {
+      id: resultNewBook.rows[0].id,
+      userId: resultNewBook.rows[0].user_id,
+      title: resultNewBook.rows[0].title,
+      author: resultNewBook.rows[0].author,
+      publisher: resultNewBook.rows[0].publisher,
+      publicationYear: resultNewBook.rows[0].publication_year,
+      pages: resultNewBook.rows[0].pages,
+      coverUrl: resultNewBook.rows[0].cover_url,
+    };
+
+    return res.status(201).json({
+      message: "Libro creado correctamente",
+      book: newBook,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
