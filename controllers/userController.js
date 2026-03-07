@@ -1,4 +1,5 @@
-import db from "../config/db.js";
+import db from '../config/db.js';
+import { validateUUID } from '../utils/validations.js';
 
 export async function registerUser(req, res) {
   try {
@@ -38,7 +39,7 @@ export async function registerUser(req, res) {
       id: resultNewUser.rows[0].id,
       name: resultNewUser.rows[0].name,
       email: resultNewUser.rows[0].email,
-    }
+    };
 
     // Devolver el nuevo usuario al cliente
     return res.status(201).json({
@@ -54,3 +55,41 @@ export async function registerUser(req, res) {
   }
 }
 
+export async function getUserById(req, res) {
+  try {
+    const userId = req.params.id;
+
+    if (!validateUUID(userId)) {
+      return res.status(400).json({
+        message: 'El ID proporcionado no es un UUID válido',
+      });
+    }
+
+    const resultFoundedUser = await db.query(
+      'SELECT id, name, email FROM users WHERE id = $1',
+      [userId],
+    );
+    if (resultFoundedUser.rows.length === 0) {
+      return res.status(404).json({
+        message: 'Usuario no encontrado',
+      });
+    }
+
+    const user = {
+      id: resultFoundedUser.rows[0].id,
+      name: resultFoundedUser.rows[0].name,
+      email: resultFoundedUser.rows[0].email,
+    };
+
+    return res.status(200).json({
+      message: 'Usuario encontrado',
+      user,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message:
+        'Ha ocurrido un error inesperado. Por favor, intenta más tarde...',
+    });
+  }
+}
