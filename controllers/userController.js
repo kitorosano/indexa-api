@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import db from '../config/db.js';
 import { validateUUID } from '../utils/validations.js';
 
