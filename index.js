@@ -5,6 +5,7 @@ import {
   corsErrorHandler,
   corsMiddleware,
 } from './middleware/corsMiddleware.js';
+import loggerMiddleware from './middleware/loggerMiddleware.js';
 import authRouter from './routes/authRoutes.js';
 import bookRouter from './routes/bookRoutes.js';
 import groupRouter from './routes/groupRoutes.js';
@@ -15,6 +16,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(loggerMiddleware);
 app.use(corsMiddleware);
 app.use(corsErrorHandler);
 
