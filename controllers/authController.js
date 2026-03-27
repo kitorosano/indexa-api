@@ -82,7 +82,7 @@ export async function login(req, res) {
       res.clearCookie('refreshToken', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
       });
     }
 
@@ -95,7 +95,7 @@ export async function login(req, res) {
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
     });
 
@@ -124,7 +124,7 @@ export async function logout(req, res) {
       res.clearCookie('refreshToken', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
       });
     }
 
@@ -151,7 +151,7 @@ export async function refreshToken(req, res) {
     res.clearCookie('refreshToken', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
     });
 
     // Validar que el refresh token exista en la base de datos
@@ -229,7 +229,7 @@ export async function refreshToken(req, res) {
         res.cookie('refreshToken', refreshToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
+          sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
           maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
         });
 
