@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { login, logout, refreshToken } from '../controllers/authController.js';
+import { verifyAccessToken } from '../middleware/verifyAccessToken.js';
 
 const router = Router();
 
@@ -10,6 +11,6 @@ router.post('/', login);
 router.get('/', refreshToken);
 
 // GET /auth => Cerrar sesión del usuario actual
-router.delete('/', logout);
+router.delete('/', verifyAccessToken, logout);
 
 export default router;

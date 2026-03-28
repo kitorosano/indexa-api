@@ -5,6 +5,7 @@ export const verifyAccessToken = (req, res, next) => {
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
+    console.log('No vino el accessToken en la cabecera de la peticion');
     return res.status(401).json({
       message: 'Usuario no autenticado',
     });
@@ -17,6 +18,7 @@ export const verifyAccessToken = (req, res, next) => {
     };
     next();
   } catch (error) {
+    console.log('El accessToken que vino en la peticion no es valido');
     return res.status(403).json({
       message: 'La sesión no es válida',
     });

@@ -61,8 +61,9 @@ export async function getUserById(req, res) {
     const userId = req.params.id;
 
     if (!validateUUID(userId)) {
+      console.log('El ID proporcionado no es un UUID válido');
       return res.status(400).json({
-        message: 'El ID proporcionado no es un UUID válido',
+        message: 'El ID de usuario proporcionado no es válido',
       });
     }
 
@@ -71,6 +72,7 @@ export async function getUserById(req, res) {
       [userId],
     );
     if (resultFoundedUser.rows.length === 0) {
+      console.log('Usuario no encontrado con el ID proporcionado');
       return res.status(404).json({
         message: 'Usuario no encontrado',
       });
