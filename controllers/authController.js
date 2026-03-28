@@ -6,6 +6,7 @@ export async function login(req, res) {
   try {
     // Validar datos de entrada
     if (req.body.email === '' || req.body.password === '') {
+      console.log('Los campos email o password vinieron vacios');
       return res.status(400).json({
         message: 'Todos los campos son obligatorios',
       });
@@ -17,6 +18,7 @@ export async function login(req, res) {
       [req.body.email],
     );
     if (resultFoundedUser.rows.length === 0) {
+      console.log('No se encontró al usuario con ese email');
       return res.status(401).json({
         message: 'El email o la contraseña son incorrectos',
       });
@@ -28,6 +30,7 @@ export async function login(req, res) {
       resultFoundedUser.rows[0].password,
     );
     if (!isPasswordValid) {
+      console.log('La contraseña es incorrecta');
       return res.status(401).json({
         message: 'El email o la contraseña son incorrectos',
       });
@@ -86,7 +89,7 @@ export async function login(req, res) {
       });
     }
 
-    // Almacenar el refresh token en la base de datos
+    // Almacenar el nuevo refresh token en la base de datos
     await db.query(
       'INSERT INTO sessions (user_id, refresh_token) VALUES ($1, $2)',
       [resultFoundedUser.rows[0].id, refreshToken],
@@ -143,6 +146,7 @@ export async function refreshToken(req, res) {
     const currentRefreshTokenOnCookie = req.cookies?.refreshToken;
 
     if (!currentRefreshTokenOnCookie) {
+      console.log('No vino el refreshToken en la cookie');
       return res.status(401).json({
         message: 'Usuario no autenticado',
       });
@@ -174,6 +178,7 @@ export async function refreshToken(req, res) {
         },
       );
 
+      console.log('El refresh token no existe en la base de datos');
       return res.status(403).json({
         message: 'La sesión no es válida',
       });
@@ -189,6 +194,7 @@ export async function refreshToken(req, res) {
           await db.query('DELETE FROM sessions WHERE refresh_token = $1', [
             currentRefreshTokenOnCookie,
           ]);
+          console.log('El refresh token no es valido');
           return res.status(403).json({
             message: 'La sesión no es válida',
           });
@@ -196,6 +202,7 @@ export async function refreshToken(req, res) {
 
         // Verificar que el refresh token corresponda al usuario que lo ha generado
         if (resultSession.rows[0].user_id !== decodedUser.id) {
+          console.log('El refresh token no corresponde al usuario autenticado');
           return res.status(403).json({
             message: 'La sesión no es válida',
           });

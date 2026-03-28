@@ -4,6 +4,7 @@ const loggerMiddleware = function (req, res, next) {
   if (method === 'OPTIONS') return next();
 
   console.log('[IN]', {
+    timestamp: new Date().toISOString(),
     method,
     url: originalUrl,
   });
@@ -17,6 +18,7 @@ const loggerMiddleware = function (req, res, next) {
 
   res.on('finish', function () {
     console.log('[OUT]', {
+      timestamp: new Date().toISOString(),
       method,
       url: originalUrl,
       statusCode: res.statusCode,
